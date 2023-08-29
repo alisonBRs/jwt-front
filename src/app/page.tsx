@@ -1,70 +1,67 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
 import { Toast } from "./Toasts/toast";
-
-import bcrypt from "bcrypt";
 import { http } from "@/http/axios-response";
+
+import secureLocalStorage from "react-secure-storage";
+import Link from "next/link";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
 
-  const [user, setUser] = useState(Object);
-  const [userId, setUserId] = useState(Object);
-
-  const [profile, setProfile] = useState(Array<profileType>);
-  const [userPass, setUserPass] = useState(Object);
-
-  const [alert, setAlert] = useState(false);
-
-  interface profileType {
-    id: number;
-  }
+  const [toast, setToast] = useState(false);
 
   async function verifyLogin(e: any) {
     e.preventDefault();
 
     if (!email) {
-      setAlert(true);
+      setToast(true);
       return;
     }
 
     if (!password) {
-      setAlert(true);
+      setToast(true);
       return;
     }
 
-    setAlert(false);
+    setToast(false);
 
     try {
-      const responseLogin = await http.post("/login", {
+      const response = await http.post("/login", {
         email,
         password,
       });
 
-      setToken(responseLogin.data.token);
-      setUser(responseLogin.data.User);
-      // setUserId(responseLogin.data.User.id);
+      if (!response) {
+        return;
+      }
+
+      setToken(response.data.token);
+
+      secureLocalStorage.setItem("item", token);
     } catch (err: any) {
-      console.error(err.response.data);
+      console.error(err?.response?.data);
+      setToast(true);
     }
-
-    console.log(token);
-  }
-
-  function toast() {
-    // const verifyPass = bcrypt.compare(password, )
-    return false;
   }
 
   return (
     <div className="border-solid  border-2  justify-center h-screen flex flex-col items-center gap-6">
-      <Toast validation={alert} />
+      <Toast
+        setValidation={setToast}
+        message="Email or password not found"
+        validation={toast}
+      />
       <h1>Login</h1>
-      <form onSubmit={verifyLogin} autoComplete="off" method="POST">
+      <form
+        action="/dashboard"
+        onSubmit={verifyLogin}
+        autoComplete="off"
+        method="POST"
+      >
         <div className="flex flex-col items-end">
           <label htmlFor="email">
             <span>email: </span>

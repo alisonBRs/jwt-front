@@ -1,29 +1,36 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
-export function Toast({ validation }: { validation: boolean }) {
-  let [valid, setValid] = useState(false);
-
+export function Toast({
+  validation,
+  setValidation,
+  message,
+}: {
+  validation: boolean;
+  setValidation: Dispatch<SetStateAction<boolean>>;
+  message: string;
+}) {
   useEffect(() => {
-    if (validation) {
-      setValid(true);
-
-      const timer = setTimeout(() => {
-        setValid(false);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    } else {
-      setValid(false);
+    if (!validation) {
+      setValidation(false);
+      return;
     }
+
+    setValidation(true);
+
+    const timer = setTimeout(() => {
+      setValidation(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, [validation]);
 
-  if (!validation || !valid) {
+  if (!validation) {
     return null;
   }
 
   return (
     <div>
-      <p className="text-red-500">Email or password not found</p>
+      <p className="text-red-500">{message}</p>
     </div>
   );
 }
