@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Toast } from "./Toasts/toast";
 import { http } from "@/http/axios-response";
+import { useRouter } from "next/navigation";
 
 import secureLocalStorage from "react-secure-storage";
-import Link from "next/link";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -13,6 +13,8 @@ export default function Home() {
   const [token, setToken] = useState("");
 
   const [toast, setToast] = useState(false);
+
+  const { push } = useRouter();
 
   async function verifyLogin(e: any) {
     e.preventDefault();
@@ -42,6 +44,8 @@ export default function Home() {
       setToken(response.data.token);
 
       secureLocalStorage.setItem("item", token);
+
+      push("/dashboard");
     } catch (err: any) {
       console.error(err?.response?.data);
       setToast(true);
@@ -56,12 +60,7 @@ export default function Home() {
         validation={toast}
       />
       <h1>Login</h1>
-      <form
-        action="/dashboard"
-        onSubmit={verifyLogin}
-        autoComplete="off"
-        method="POST"
-      >
+      <form onSubmit={verifyLogin} autoComplete="off" method="POST">
         <div className="flex flex-col items-end">
           <label htmlFor="email">
             <span>email: </span>
