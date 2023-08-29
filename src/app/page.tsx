@@ -10,7 +10,6 @@ import secureLocalStorage from "react-secure-storage";
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
 
   const [toast, setToast] = useState(false);
 
@@ -41,7 +40,7 @@ export default function Home() {
         return;
       }
 
-      setToken(response.data.token);
+      const token = response.data.token;
 
       secureLocalStorage.setItem("item", token);
 
